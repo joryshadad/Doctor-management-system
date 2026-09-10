@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="auth-card">
+    <h2>إنشاء حساب جديد</h2>
+    <p>بعد التسجيل سيتم دخولك تلقائيًا إلى الصفحة الرئيسية.</p>
+    <form method="post">
+        {% csrf_token %}
+        <label for="username">اسم المستخدم</label>
+        <input id="username" type="text" name="username" required autofocus>
+        <label for="email">البريد الإلكتروني</label>
+        <input id="email" type="email" name="email">
+        <label for="password">كلمة المرور</label>
+        <input id="password" type="password" name="password" required minlength="8">
+        <label for="password_confirm">تأكيد كلمة المرور</label>
+        <input id="password_confirm" type="password" name="password_confirm" required minlength="8">
+        <button type="submit" class="btn-card">تسجيل الحساب</button>
+    </form>
+    <a href="{% url 'login' %}">لديك حساب؟ تسجيل الدخول</a>
+</section>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة العيادة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<header>
+    <div class="logo"><i class="fas fa-clinic-medical"></i> عيادتي</div>
+    <nav>
+        <a href="{% url 'home' %}"><i class="fas fa-home"></i> الرئيسية</a>
+        <a href="{% url 'doctors' %}"><i class="fas fa-user-md"></i> الأطباء</a>
+        <a href="{% url 'patients' %}"><i class="fas fa-user-injured"></i> المرضى</a>
+        <a href="{% url 'booking' %}"><i class="fas fa-calendar-alt"></i> الحجوزات</a>
+        {% if user.is_authenticated %}
+            <span class="welcome">مرحبًا، {{ user.username }}</span>
+            <a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> إشعاراتي</a>
+            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> خروج</a>
+        {% else %}
+            <a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> دخول</a>
+            <a href="{% url 'register' %}"><i class="fas fa-user-plus"></i> تسجيل حساب</a>
+        {% endif %}
+    </nav>
+</header>
+<main>
+    {% if messages %}
+        {% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+</main>
+<footer><p>&copy; 2026 جميع الحقوق محفوظة - نظام إدارة العيادة</p></footer>
+<script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

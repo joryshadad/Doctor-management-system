@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    .patients-page {
+        padding: 120px 30px 50px;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .patients-title {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .patients-title h1 {
+        font-size: 38px;
+        color: #ffffff;
+        margin-bottom: 12px;
+    }
+
+    .patients-title h1 span {
+        color: #ffd54f;
+    }
+
+    .patients-title p {
+        color: #eeeeee;
+        font-size: 18px;
+    }
+
+    .patients-table-container {
+        width: 100%;
+        overflow-x: auto;
+        background: rgba(255, 255, 255, 0.12);
+        padding: 18px;
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    .patients-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: rgba(255, 255, 255, 0.08);
+        text-align: center;
+        direction: rtl;
+    }
+
+    .patients-table th {
+        background: rgba(0, 0, 0, 0.35);
+        color: #ffd54f;
+        padding: 16px;
+        font-size: 17px;
+        border-bottom: 2px solid #ffd54f;
+    }
+
+    .patients-table td {
+        color: #ffffff;
+        padding: 15px;
+        font-size: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .patients-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .no-patients {
+        text-align: center;
+        color: #ffffff;
+        padding: 25px !important;
+        font-size: 18px;
+    }
+
+    @media (max-width: 600px) {
+        .patients-page {
+            padding: 100px 12px 35px;
+        }
+
+        .patients-title h1 {
+            font-size: 28px;
+        }
+
+        .patients-table th,
+        .patients-table td {
+            padding: 10px 7px;
+            font-size: 14px;
+        }
+    }
+</style>
+
+<section class="patients-page">
+
+    <div class="patients-title">
+        <h1>إدارة <span>المرضى</span></h1>
+        <p>عرض ومتابعة بيانات المرضى المسجلين في النظام.</p>
+    </div>
+
+    <div class="patients-table-container">
+        <table class="patients-table">
+            <thead>
+                <tr>
+                    <th>الرقم</th>
+                    <th>اسم المريض</th>
+                    <th>العمر</th>
+                    <th>رقم الهاتف</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td>{{ patient.id }}</td>
+                    <td>{{ patient.name }}</td>
+                    <td>{{ patient.age }}</td>
+                    <td>{{ patient.phone }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="no-patients">
+                        لا يوجد مرضى مسجلون حاليًا
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</section>
+
+{% endblock %}

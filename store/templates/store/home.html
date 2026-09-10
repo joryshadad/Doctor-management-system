@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- 1. شريط البحث (الفلتر) الواضح في ال
+<!-- 1. شريط البحث -->
+<section style="padding: 10px 20px; text-align: center; margin-top: 55px; margin-bottom: 25px; position: relative;">
+    <form method="GET" action="" style="display: inline-flex; gap: 10px; width: 100%; max-width: 500px;">
+        <input type="text" name="q" value="{{ request.GET.q }}" placeholder="ابحث عن طبيب أو تخصص..." style="flex: 1; padding: 12px 20px; border-radius: 25px; border: 2px solid #00d2ff; background: #ffffff; color: #000000; text-align: center; font-size: 16px; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+        <button type="submit" style="padding: 10px 25px; background: #00d2ff; color: #fff; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 16px;">بحث</button>
+    </form>
+
+    <!-- 2. قائمة منسدلة مخفية لا تظهر إلا عند البحث -->
+    {% if request.GET.q %}
+    <div style="position: absolute; width: 100%; max-width: 500px; left: 50%; transform: translateX(-50%); background: #ffffff; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); margin-top: 10px; z-index: 1000; overflow: hidden; text-align: right;">
+        {% for doc in doctors %}
+        <div style="padding: 12px 20px; border-bottom: 1px solid #eee; color: #333; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: bold; color: #007bff;">د. {{ doc.name }}</span>
+            <span style="color: #666; font-size: 14px;">{{ doc.specialty }}</span>
+        </div>
+        {% empty %}
+        <div style="padding: 15px; text-align: center; color: #777;">
+            عذراً، لا يوجد نتيجة مطابقة لبحثك.
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</section>
+
+<!-- 2. اسم العيادة داخل زر أصفر أنيق وبارز -->
+<section style="text-align: center; margin: 25px 0;">
+    <div style="display: inline-block; padding: 15px 45px; background-color: #ffc107; color: #212529; border-radius: 50px; font-size: 26px; font-weight: bold; box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4); text-transform: uppercase;">
+        عيادة الشفاء التخصصية
+    </div>
+</section>
+
+<!-- 3. معرض اللوحات الفنية الطبية -->
+<section style="text-align: center; padding: 20px; margin-bottom: 30px;">
+    <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+      
+        <!-- اللوحة الأولى -->
+        <div style="background: #ffffff; padding: 10px 10px 20px 10px; border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); width: 340px; border: 8px solid #222;">
+            <div style="width: 100%; height: 190px; overflow: hidden; background: #fff;">
+                <img src="https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&w=600&q=80" alt="لوحة قلب" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        </div>
+
+        <!-- اللوحة الثانية -->
+        <div style="background: #ffffff; padding: 10px 10px 20px 10px; border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); width: 340px; border: 8px solid #222;">
+            <div style="width: 100%; height: 190px; overflow: hidden; background: #fff;">
+                <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=600&q=80" alt="لوحة تشريحية" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- 4. قسم خدمات العيادة والإرشادات -->
+<section class="services" style="padding: 20px; text-align: center;">
+    <h2>✨ خدمات العيادة وإرشاداتها</h2>
+    <div class="cards" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
+       
+        <!-- بطاقة الأطباء -->
+        <div class="card" style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; width: 280px;">
+            <div class="icon" style="font-size: 40px;">👨‍⚕️</div>
+            <h3>الأطباء</h3>
+            <p>إدارة كاملة للأطباء والتخصصات.</p>
+            <a href="{% url 'doctors' %}" class="btn-card">استعراض</a>
+        </div>
+
+        <!-- بطاقة المرضى -->
+        <div class="card" style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; width: 280px;">
+            <div class="icon" style="font-size: 40px;">🧑‍🦽</div>
+            <h3>المرضى</h3>
+            <p>تسجيل المرضى ومتابعة تاريخهم.</p>
+            <a href="{% url 'patients' %}" class="btn-card">استعراض</a>
+        </div>
+
+        <!-- بطاقة الإرشادات الطبية -->
+        <div class="card" style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; width: 280px;">
+            <div class="icon" style="font-size: 40px;">💡</div>
+            <h3>إرشادات طبية</h3>
+            <p>تعليمات وإرشادات هامة للمراجعة والوقاية.</p>
+            <a href="{% url 'booking' %}" class="btn-card">عرض الإرشادات</a>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

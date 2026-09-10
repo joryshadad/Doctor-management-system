@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .login-page { min-height: calc(100vh - 150px); display: flex; justify-content: center; align-items: center; padding: 45px 20px; background: radial-gradient(circle at top, rgba(0,210,255,.22), transparent 45%); }
+    .login-card { width: 360px; padding: 34px; background: rgba(255,255,255,.97); color: #183b56; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,.28); text-align: center; }
+    .login-card .login-icon { width: 72px; height: 72px; line-height: 72px; margin: -70px auto 18px; border-radius: 50%; background: #ffd54f; color: #183b56; font-size: 30px; box-shadow: 0 6px 16px rgba(0,0,0,.2); }
+    .login-card h2 { margin: 0 0 8px; font-size: 28px; }
+    .login-card p { color: #607d8b; margin: 0 0 22px; }
+    .login-card form { text-align: right; }
+    .login-card label { display: block; margin: 13px 0 6px; font-weight: bold; }
+    .login-card input { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #c7d4dc; border-radius: 9px; font-size: 15px; outline: none; }
+    .login-card input:focus { border-color: #00bcd4; box-shadow: 0 0 0 3px rgba(0,188,212,.15); }
+    .login-submit { width: 100%; margin-top: 22px; padding: 12px; border: 0; border-radius: 25px; background: linear-gradient(90deg, #00bcd4, #1976d2); color: white; font-size: 16px; font-weight: bold; cursor: pointer; }
+    .login-submit:hover { opacity: .9; transform: translateY(-1px); }
+    .login-card a { display: block; margin-top: 20px; color: #087ea4; text-decoration: none; font-weight: bold; }
+</style>
+
+<section class="login-page">
+    <div class="login-card">
+        <div class="login-icon"><i class="fas fa-sign-in-alt"></i></div>
+        <h2>تسجيل الدخول</h2>
+        <p>مرحبًا بكِ في نظام إدارة العيادة</p>
+        <form method="post">
+            {% csrf_token %}
+            <label for="username">اسم المستخدم</label>
+            <input id="username" type="text" name="username" required autofocus>
+            <label for="password">كلمة المرور</label>
+            <input id="password" type="password" name="password" required>
+            <button class="login-submit" type="submit"><i class="fas fa-sign-in-alt"></i> دخول</button>
+        </form>
+        <a href="{% url 'register' %}">ليس لديك حساب؟ إنشاء حساب جديد</a>
+    </div>
+</section>
+{% endblock %}

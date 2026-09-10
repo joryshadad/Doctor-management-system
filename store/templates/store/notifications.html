@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="page-card">
+    <h2>إشعاراتي</h2>
+    {% if notifications %}
+        {% for notification in notifications %}
+            <article class="message {% if not notification.is_read %}info{% endif %}">
+                <strong>{{ notification.message }}</strong>
+                <small>{{ notification.created_at|date:'Y-m-d H:i' }}</small>
+                {% if notification.link %}<a href="{{ notification.link }}">فتح</a>{% endif %}
+                {% if not notification.is_read %}
+                <form method="post" action="{% url 'notification_read' notification.pk %}" style="display:inline">
+                    {% csrf_token %}<button type="submit">تحديد كمقروء</button>
+                </form>
+                {% else %}<span>مقروء</span>{% endif %}
+            </article>
+        {% endfor %}
+    {% else %}
+        <p>لا توجد إشعارات حاليًا.</p>
+    {% endif %}
+</section>
+{% endblock %}

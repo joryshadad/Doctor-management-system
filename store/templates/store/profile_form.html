@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero" style="min-height:25vh; padding-top:110px;"><div><h1>الملف المهني <span>{{ doctor.name }}</span></h1><p>علاقة One-to-One بين الطبيب وملفه المهني.</p></div></section>
+<section class="data-section"><div class="table-wrap" style="max-width:700px;margin:auto;"><form method="post" class="add-form" style="display:block;text-align:right;">{% csrf_token %}{{ form.as_p }}<button type="submit">حفظ الملف</button> <a href="{% url 'doctor_detail' doctor.pk %}" style="color:#ffd54f;">إلغاء</a></form></div></section>
+{% endblock %}

@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏥 ClinicCare - نظام العياده المتكامل</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ========== التنسيقات العامة ========== */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #6d28d9, #559fc7, #394f59);
+            background-size: 400% 400%;
+            animation: bgMove 12s ease infinite alternate;
+            color: #fff;
+            min-height: 100vh;
+            transition: background 0.5s;
+        }
+        @keyframes bgMove { 0%{background-position:0% 50%;} 100%{background-position:100% 50%;} }
+        body.dark { background: #0b1020; }
+        body.dark header { background: rgba(10,16,32,0.9); }
+        body.dark .card, body.dark .box, body.dark .modal-content { background: rgba(255,255,255,0.06); backdrop-filter: blur(8px); }
+        body.dark .footer { background: #0a1428; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px 8%; position: fixed; top:0; left:0; right:0;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(16px);
+            z-index: 999; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .logo { font-size:32px; font-weight:700; }
+        .logo span { color:#ffd54f; }
+        nav a {
+            color:#fff; text-decoration:none; margin:0 14px; font-size:18px;
+            font-weight:500; transition:0.3s; cursor:pointer;
+            padding:6px 0; border-bottom:2px solid transparent;
+        }
+        nav a:hover { color:#ffd54f; border-bottom-color:#ffd54f; }
+        nav a i { margin-left:6px; }
+        .header-actions { display:flex; align-items:center; gap:15px; }
+        .mode-btn {
+            padding:10px 22px; border:none; border-radius:40px; font-size:15px;
+            font-weight:600; cursor:pointer; background:#ffd54f; color:#000;
+            transition:0.3s; display:flex; align-items:center; gap:8px;
+        }
+        .mode-btn:hover { transform:scale(1.05); box-shadow:0 0 20px #ffd54f80; }
+
+        .page-section { display:none; animation:fadeUp 0.6s ease; }
+        .page-section.active { display:block; }
+        @keyframes fadeUp { 0%{opacity:0; transform:translateY(30px);} 100%{opacity:1; transform:translateY(0);} }
+
+        .hero {
+            min-height:85vh; display:flex; justify-content:center; align-items:center;
+            text-align:center; padding:120px 8% 60px;
+        }
+        .hero h1 { font-size:60px; margin-bottom:20px; font-weight:800; }
+        .hero h1 span { color:#ffd54f; }
+        .hero p { font-size:22px; max-width:700px; margin:0 auto 30px; line-height:1.9; opacity:0.9; }
+        .hero .buttons { display:flex; flex-wrap:wrap; justify-content:center; gap:16px; }
+        .hero .buttons a {
+            display:inline-block; padding:16px 40px; border-radius:50px;
+            text-decoration:none; font-size:18px; font-weight:700;
+            transition:0.4s; background:rgba(255,255,255,0.9); color:#0b1a33;
+            box-shadow:0 12px 30px rgba(0,0,0,0.3); cursor:pointer; border:none;
+        }
+        .hero .buttons a:hover { transform:translateY(-6px) scale(1.04); background:#ffd54f; color:#000; }
+
+        .services { padding:40px 8% 70px; }
+        .services h2 { text-align:center; font-size:42px; margin-bottom:50px; }
+        .cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(270px,1fr)); gap:35px; }
+        .card {
+            background:rgba(255,255,255,0.12); backdrop-filter:blur(12px);
+            padding:40px 25px; border-radius:30px; text-align:center;
+            transition:0.4s; border:1px solid rgba(255,255,255,0.15);
+        }
+        .card:hover { transform:translateY(-14px); box-shadow:0 25px 50px rgba(0,0,0,0.4); background:rgba(255,255,255,0.2); }
+        .card .icon { font-size:60px; margin-bottom:15px; }
+        .card h3 { font-size:26px; margin-bottom:12px; }
+        .card p { opacity:0.85; font-size:17px; line-height:1.7; }
+        .btn-card {
+            display:inline-block; margin-top:22px; padding:12px 35px;
+            background:#00b4d8; color:#fff; border-radius:40px;
+            text-decoration:none; font-weight:700; cursor:pointer; transition:0.3s; border:none;
+        }
+        .btn-card:hover { background:#ffd54f; color:#000; transform:scale(1.05); }
+
+        .stats { padding:30px 8% 70px; display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:25px; }
+        .box {
+            background:rgba(255,255,255,0.1); backdrop-filter:blur(6px);
+            padding:30px 20px; border-radius:25px; text-align:center;
+            border:1px solid rgba(255,255,255,0.1); transition:0.3s;
+        }
+        .box:hover { transform:scale(1.03); }
+        .box h2 { font-size:44px; color:#ffd54f; margin-bottom:8px; }
+        .box p { font-size:18px; opacity:0.8; }
+
+        .data-section { padding:20px 8% 60px; }
+        .table-wrap {
+            overflow-x:auto; background:rgba(255,255,255,0.06); border-radius:20px;
+            padding:15px; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.08);
+        }
+        table { width:100%; border-collapse:collapse; text-align:center; font-size:16px; }
+        th { background:rgba(255,215,79,0.2); padding:14px 10px; font-weight:700; color:#ffd54f; }
+        td { padding:12px 10px; border-bottom:1px solid rgba(255,255,255,0.06); }
+        tr:hover td { background:rgba(255,255,255,0.05); }
+
+        .add-form, .filter-buttons {
+            display:flex; flex-wrap:wrap; gap:12px; justify-content:center;
+            margin:20px 0;
+        }
+        .add-form input, .add-form select, .filter-buttons button {
+            padding:12px 18px; border-radius:40px; border:none;
+            background:rgba(255,255,255,0.15); color:#fff; font-size:15px;
+            outline:none; min-width:150px; backdrop-filter:blur(4px);
+        }
+        .add-form input::placeholder { color:rgba(255,255,255,0.6); }
+        .add-form button, .filter-buttons button {
+            background:#ffd54f; color:#000; font-weight:700; cursor:pointer; transition:0.3s;
+            padding:12px 25px;
+        }
+        .add-form button:hover, .filter-buttons button:hover { transform:scale(1.05); box-shadow:0 0 20px #ffd54f80; }
+
+        .modal {
+            display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:1000;
+            justify-content:center; align-items:center; animation:fadeIn 0.4s;
+        }
+        .modal.show { display:flex; }
+        @keyframes fadeIn { 0%{opacity:0; transform:scale(0.9);} 100%{opacity:1; transform:scale(1);} }
+        .modal-content {
+            background:rgba(20,40,80,0.95); backdrop-filter:blur(16px);
+            padding:45px 40px; border-radius:40px; max-width:750px; width:90%;
+            text-align:center; border:1px solid rgba(255,255,255,0.2);
+            box-shadow:0 30px 60px rgba(0,0,0,0.6); position:relative;
+        }
+        .modal-content .close {
+            position:absolute; top:15px; left:25px; font-size:32px;
+            cursor:pointer; color:#fff; transition:0.3s; background:none; border:none;
+        }
+        .modal-content .close:hover { color:#ffd54f; transform:rotate(90deg); }
+        .modal-content h2 { font-size:36px; margin-bottom:10px; }
+        .modal-content h2 i { color:#ffd54f; margin-left:10px; }
+        .offer-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(170px,1fr)); gap:20px; }
+        .offer-card {
+            background:rgba(255,255,255,0.08); padding:25px 15px; border-radius:24px;
+            transition:0.3s; border:1px solid rgba(255,255,255,0.05);
+        }
+        .offer-card:hover { background:rgba(255,215,79,0.15); transform:translateY(-6px); }
+        .offer-card i { font-size:44px; color:#ffd54f; margin-bottom:12px; }
+        .offer-card h4 { font-size:22px; margin-bottom:8px; }
+        .offer-card span {
+            display:inline-block; background:#ffd54f; color:#000;
+            padding:6px 18px; border-radius:30px; font-weight:700; font-size:14px; margin-top:8px;
+        }
+
+        .floating-offer-btn {
+            position:fixed; bottom:30px; right:30px; background:#ffd54f; color:#000;
+            border:none; border-radius:60px; padding:16px 30px; font-size:18px;
+            font-weight:700; box-shadow:0 10px 30px rgba(0,0,0,0.4);
+            cursor:pointer; transition:0.3s; z-index:500;
+            display:flex; align-items:center; gap:12px; animation:pulse 2s infinite;
+        }
+        .floating-offer-btn:hover { transform:scale(1.08) rotate(-2deg); box-shadow:0 0 40px #ffd54f; }
+        @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(255,213,79,0.5);} 70%{box-shadow:0 0 0 15px rgba(255,213,79,0);} 100%{box-shadow:0 0 0 0 rgba(255,213,79,0);} }
+
+        .footer {
+            background:#07182e; padding:50px 8% 30px; text-align:center;
+            margin-top:40px; border-top:1px solid rgba(255,255,255,0.08);
+        }
+        .footer h2 { font-size:34px; margin-bottom:10px; }
+        .footer p { opacity:0.8; }
+        .footer-boxes { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:25px; margin:35px 0; }
+        .footer .box { background:#0e2a52; border:none; padding:25px 15px; }
+        .footer .box h3 { margin-bottom:12px; color:#ffd54f; }
+        .copy { margin-top:25px; font-size:16px; opacity:0.6; }
+
+        @media (max-width:768px) {
+            header { flex-wrap:wrap; gap:10px; padding:12px 5%; }
+            nav a { margin:0 8px; font-size:15px; }
+            .hero h1 { font-size:38px; }
+            .hero p { font-size:18px; }
+            .modal-content { padding:30px 20px; }
+            .floating-offer-btn { padding:12px 20px; font-size:15px; bottom:20px; right:20px; }
+        }
+    </style>
+  </head>
+  <body>
+
+    <header>
+        <div class="logo">🏥 Clinic<span>Care</span></div>
+        <nav>
+            <a onclick="showPage('home')"><i class="fas fa-home"></i> الرئيسية</a>
+            <a onclick="showPage('doctor')"><i class="fas fa-user-md"></i> الأطباء</a>
+            <a onclick="showPage('patient')"><i class="fas fa-user-injured"></i> المرضى</a>
+            <a onclick="showPage('booking')"><i class="fas fa-calendar-check"></i> الحجز</a>
+        </nav>
+        <div class="header-actions">
+            <button class="mode-btn" onclick="toggleMode()"><i class="fas fa-moon"></i> ليلي</button>
+        </div>
+    </header>
+
+    <!-- الصفحة الرئيسية -->
+    <div id="home" class="page-section active">
+        <section class="hero">
+            <div>
+                
+                <h1>نظام إدارة <span>العيادة</span></h1>
+
+    <p>اسم العيادة: {{ clinic_name }}</p>
+    <p>اسم الطبيب: {{ doctor_name|upper }}</p>
+    <p>اسم المريض: {{ patient_name|lower }}</p>
+    <p>المدينة: {{ city|title }}</p>
+    <p>الرسالة: {{ message|capfirst }}</p>
+    <p>الوصف: {{ description|truncatechars:15 }}</p>
+    <p>العمر: {{ age }}</p>
+
+   {% if is_open %}
+   <p>✅ العيادة مفتوحة</p>
+   {% else %}
+   <p>❌ العيادة مغلقة</p>
+                 {% endif %}
+
+                   <ul>
+                   {% for department in departments %}
+                  <li>{{ department }}</li>
+                 {% endfor %}
+                 </ul>
+                 <p>منصة ذكية لإدارة الأطباء والمرضى والمواعيد بكل احترافية وسهولة.</p>
+                 <div class="buttons">
+                    <a onclick="showPage('doctor')"><i class="fas fa-user-md"></i> الأطباء</a>
+                    <a onclick="showPage('patient')"><i class="fas fa-user-injured"></i> المرضى</a>
+                    <a onclick="showPage('booking')"><i class="fas fa-calendar-plus"></i> حجز موعد</a>
+                </div>
+            </div>
+        </section>
+        <section class="services">
+            <h2>✨ خدمات العيادة</h2>
+            <div class="cards">
+                <div class="card"><div class="icon">👨‍⚕️</div><h3>الأطباء</h3><p>إدارة كاملة للأطباء والتخصصات.</p><a onclick="showPage('doctor')" class="btn-card">استعراض</a></div>
+                <div class="card"><div class="icon">🧑‍🦽</div><h3>المرضى</h3><p>تسجيل المرضى ومتابعة تاريخهم.</p><a onclick="showPage('patient')" class="btn-card">استعراض</a></div>
+                <div class="card"><div class="icon">📅</div><h3>المواعيد</h3><p>حجز وإدارة المواعيد بسهولة.</p><a onclick="showPage('booking')" class="btn-card">احجز الآن</a></div>
+            </div>
+        </section>
+        <section class="stats" id="statsSection"></section>
+    </div>
+
+    <!-- صفحة الأطباء -->
+    <div id="doctor" class="page-section">
+        <section class="hero" style="min-height:20vh; padding-top:100px;">
+            <div><h1>👨‍⚕️ إدارة <span>الأطباء</span></h1><p>تصفية، ترتيب، وعرض الأسماء بأحرف كبيرة/صغيرة.</p></div>
+        </section>
+        <section class="data-section">
+            <div class="filter-buttons">
+                <button onclick="filterDoctors('all')">الكل</button>
+                <button onclick="filterDoctors('جراحة عامة')">جراحة عامة</button>
+                <button onclick="filterDoctors('اطفال')">أطفال</button>
+                <button onclick="filterDoctors('قلبية')">قلبية</button>
+                <button onclick="filterDoctors('قلب و باطنية')">قلب وباطنية</button>
+                <button onclick="sortDoctorsByName()">ترتيب حسب الاسم</button>
+                <button onclick="alert(getDoctorsNamesUpper())">🔠 أسماء كبيرة</button>
+                <button onclick="alert(getDoctorsNamesLower())">🔡 أسماء صغيرة</button>
+                <button onclick="logDoctors()">📋 طباعة في الكونسول</button>
+                <button onclick="alert('إجمالي الأطباء: ' + doctors.length + ' طبيب')">📊 إحصائية</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>#</th><th>الاسم</th><th>التخصص</th><th>الهاتف</th></tr></thead>
+                    <tbody id="doctorTableBody"></tbody>
+                </table>
+            </div>
+            <div style="margin-top:20px; text-align:center; background:rgba(255,255,255,0.05); padding:20px; border-radius:20px;">
+                <p><strong>📈 إحصائيات الأطباء:</strong> <span id="doctorStatsText"></span></p>
+                <p><strong>🔍 بحث عن طبيب:</strong>
+                    <input type="text" id="searchDoctorInput" placeholder="أدخل اسم الطبيب" style="padding:8px 15px; border-radius:30px; border:none; background:rgba(255,255,255,0.15); color:#fff;">
+                    <button onclick="searchDoctor()" style="padding:8px 20px; border-radius:30px; border:none; background:#ffd54f; color:#000; font-weight:bold; cursor:pointer;">بحث</button>
+                    <span id="searchResult" style="margin-right:15px;"></span>
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <!-- صفحة المرضى -->
+    <div id="patient" class="page-section">
+        <section class="hero" style="min-height:20vh; padding-top:100px;">
+            <div><h1>🧑‍🦽 إدارة <span>المرضى</span></h1><p>تصفية حسب العمر وعرض متوسط الأعمار.</p></div>
+        </section>
+        <section class="data-section">
+            <div class="filter-buttons">
+                <button onclick="filterPatients('all')">الكل</button>
+                <button onclick="filterPatients('child')">أطفال (&lt;18)</button>
+                <button onclick="filterPatients('adult')">بالغون (18-60)</button>
+                <button onclick="filterPatients('elder')">كبار (&gt;60)</button>
+                <button onclick="alert('متوسط الأعمار: ' + getAverageAge() + ' سنة')">📊 متوسط الأعمار</button>
+                <button onclick="alert(getPatientsNamesUpper())">🔠 أسماء كبيرة</button>
+                <button onclick="alert(getPatientsNamesLower())">🔡 أسماء صغيرة</button>
+                <button onclick="sortPatientsByAge()">ترتيب حسب العمر</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>#</th><th>الاسم</th><th>العمر</th><th>الهاتف</th></tr></thead>
+                    <tbody id="patientTableBody"></tbody>
+                </table>
+            </div>
+            <div style="margin-top:20px; text-align:center; background:rgba(255,255,255,0.05); padding:20px; border-radius:20px;">
+                <p><strong>📈 إحصائيات المرضى:</strong> <span id="patientStatsText"></span></p>
+            </div>
+        </section>
+    </div>
+
+    <!-- صفحة الحجز -->
+    <div id="booking" class="page-section">
+        <section class="hero" style="min-height:20vh; padding-top:100px;">
+            <div><h1>📅 حجز <span>المواعيد</span></h1><p>إدارة المواعيد والتحقق من الحجوزات.</p></div>
+        </section>
+        <section class="data-section">
+            <div class="add-form">
+                <select id="bookDoctorSelect"><option value="">اختر الطبيب</option></select>
+                <select id="bookPatientSelect"><option value="">اختر المريض</option></select>
+                <input type="date" id="bookDateInput">
+                <input type="time" id="bookTimeInput">
+                <button onclick="addBooking()"><i class="fas fa-check"></i> حجز</button>
+            </div>
+            <div class="filter-buttons">
+                <button onclick="checkBookingToday()">📅 هل يوجد حجز اليوم؟</button>
+                <button onclick="countBookings()">🔢 عدد الحجوزات</button>
+                <button onclick="alert('جميع الحجوزات:\n' + bookings.map(b => b.date + ' ' + b.time).join('\n'))">📋 عرض الحجوزات</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>#</th><th>الطبيب</th><th>المريض</th><th>التاريخ</th><th>الوقت</th></tr></thead>
+                    <tbody id="bookingTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- مودال العروض -->
+    <div id="offerModal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal()">&times;</button>
+            <h2><i class="fas fa-gift"></i> عروض اليوم</h2>
+            <p>استفد من العروض الحصرية لفترة محدودة!</p>
+            <div class="offer-grid">
+                <div class="offer-card"><i class="fas fa-percent"></i><h4>خصم 20%</h4><p>على جميع الكشوفات</p><span>لفترة محدودة</span></div>
+                <div class="offer-card"><i class="fas fa-stethoscope"></i><h4>استشارة مجانية</h4><p>أول استشارة مجاناً</p><span>للمرضى الجدد</span></div>
+                <div class="offer-card"><i class="fas fa-heartbeat"></i><h4>فحص شامل</h4><p>فحص كامل بخصم 30%</p><span>عرض خاص</span></div>
+                <div class="offer-card"><i class="fas fa-clock"></i><h4>موعد سريع</h4><p>حجز خلال 24 ساعة</p><span>أولوية VIP</span></div>
+            </div>
+            <div style="margin-top:30px; font-size:14px; opacity:0.6;"><i class="fas fa-phone"></i> للاستفسار: 777777777</div>
+        </div>
+    </div>
+
+    <button class="floating-offer-btn" onclick="openModal()">
+        <i class="fas fa-gift fa-lg"></i> عروض اليوم 🎉
+    </button>
+
+    <footer class="footer">
+        <h2>🏥 ClinicCare</h2>
+        <p>نظام متكامل لإدارة العيادات وحجز المواعيد.</p>
+        <div class="footer-boxes">
+            <div class="box"><h3>📍 العنوان</h3><p>صنعاء - اليمن</p></div>
+            <div class="box"><h3>📞 التواصل</h3><p>777777777</p></div>
+            <div class="box"><h3>🕒 الدوام</h3><p>السبت - الخميس</p><p>8:00 ص - 8:00 م</p></div>
+        </div>
+        <p class="copy">© 2026 ClinicCare جميع الحقوق محفوظة</p>
+    </footer>
+        <script>
+        // =============================================================
+        // 1. البيانات (متغيرات عامة)
+        // =============================================================
+        let doctors = [
+            { id: 1, name: 'أحمد العبسي', specialty: 'جراحة عامة', phone: '777111222' },
+            { id: 2, name: 'سارة الدعيمي', specialty: 'اطفال', phone: '777333444' },
+            { id: 3, name: 'جمال عمران', specialty: 'قلبية', phone: '777555666' },
+            { id: 4, name: 'د. جمال ثابت عصران', specialty: 'قلب و باطنية', phone: '777888999' }
+        ];
+
+        let patients = [
+            { id: 1, name: 'علي محمد', age: 30, phone: '700123456' },
+            { id: 2, name: 'فاطمة حسن', age: 25, phone: '700654321' },
+            { id: 3, name: 'محمد عبدالله', age: 45, phone: '700987654' },
+            { id: 4, name: 'نورا علي', age: 10, phone: '700111222' },
+            { id: 5, name: 'سعيد عمر', age: 70, phone: '700333444' }
+        ];
+
+        let bookings = [
+            { id: 1, doctorId: 1, patientId: 1, date: '2026-07-30', time: '10:00' },
+            { id: 2, doctorId: 2, patientId: 2, date: '2026-07-31', time: '14:30' },
+            { id: 3, doctorId: 4, patientId: 4, date: '2026-08-01', time: '09:00' }
+        ];
+
+        let nextId = { doctor: 5, patient: 6, booking: 4 };
+
+        // =============================================================
+        // 2. دوال التحويل (فلتر) – 7 دوال على الأقل + Lower/Upper
+        // =============================================================
+
+        // 2.1 filter – تصفية الأطباء
+        function filterDoctors(specialty) {
+            let filtered;
+            if (specialty === 'all') {
+                filtered = doctors;
+            } else {
+                filtered = doctors.filter(d => d.specialty === specialty);
+            }
+            renderDoctors(filtered);
+            updateDoctorStats(filtered);
+            return filtered;
+        }
+
+        // 2.2 filter – تصفية المرضى
+        function filterPatients(category) {
+            let filtered;
+            if (category === 'all') {
+                filtered = patients;
+            } else {
+                filtered = patients.filter(p => {
+                    if (category === 'child') return p.age < 18;
+                    if (category === 'adult') return p.age >= 18 && p.age <= 60;
+                    if (category === 'elder') return p.age > 60;
+                    return false;
+                });
+            }
+            renderPatients(filtered);
+            updatePatientStats(filtered);
+            return filtered;
+        }
+
+        // 2.3 map + toUpperCase – أسماء الأطباء كبيرة
+        function getDoctorsNamesUpper() {
+            return doctors.map(d => d.name.toUpperCase()).join('، ');
+        }
+
+        // 2.4 map + toLowerCase – أسماء الأطباء صغيرة
+        function getDoctorsNamesLower() {
+            return doctors.map(d => d.name.toLowerCase()).join('، ');
+        }
+
+        // 2.5 map + toUpperCase – أسماء المرضى كبيرة
+        function getPatientsNamesUpper() {
+            return patients.map(p => p.name.toUpperCase()).join('، ');
+        }
+
+        // 2.6 map + toLowerCase – أسماء المرضى صغيرة
+        function getPatientsNamesLower() {
+            return patients.map(p => p.name.toLowerCase()).join('، ');
+        }
+
+        // 2.7 reduce – متوسط الأعمار
+        function getAverageAge(list) {
+            let data = list || patients;
+            if (data.length === 0) return 0;
+            let total = data.reduce((sum, p) => sum + p.age, 0);
+            return (total / data.length).toFixed(1);
+        }
+
+        // 2.8 reduce – إحصائيات التخصصات
+        function countUniqueSpecialties() {
+            let specialties = doctors.map(d => d.specialty);
+            return specialties.reduce((acc, spec) => {
+                acc[spec] = (acc[spec] || 0) + 1;
+                return acc;
+            }, {});
+        }
+
+        // 2.9 some – التحقق من حجز اليوم
+        function checkBookingToday() {
+            let today = new Date().toISOString().slice(0, 10);
+            let exists = bookings.some(b => b.date === today);
+            alert(exists ? '✅ نعم، يوجد حجز اليوم' : '❌ لا يوجد حجز اليوم');
+            return exists;
+        }
+
+        // 2.10 find – البحث عن طبيب
+        function searchDoctor() {
+            let query = document.getElementById('searchDoctorInput').value.trim();
+            if (!query) {
+                document.getElementById('searchResult').innerHTML = '⚠️ الرجاء إدخال اسم';
+                return;
+            }
+            let doctor = doctors.find(d => d.name.includes(query));
+            let resultSpan = document.getElementById('searchResult');
+            if (doctor) {
+                resultSpan.innerHTML = `✅ تم العثور على: ${doctor.name} (${doctor.specialty})`;
+                resultSpan.style.color = '#4caf50';
+            } else {
+                resultSpan.innerHTML = '❌ لم يتم العثور على طبيب';
+                resultSpan.style.color = '#f44336';
+            }
+        }
+
+        // 2.11 sort – ترتيب الأطباء
+        function sortDoctorsByName() {
+            let sorted = [...doctors].sort((a, b) => a.name.localeCompare(b.name));
+            renderDoctors(sorted);
+            updateDoctorStats(sorted);
+        }
+
+        // 2.12 sort – ترتيب المرضى
+        function sortPatientsByAge() {
+            let sorted = [...patients].sort((a, b) => a.age - b.age);
+            renderPatients(sorted);
+            updatePatientStats(sorted);
+        }
+
+        // 2.13 forEach – طباعة في الكونسول
+        function logDoctors() {
+            console.log('===== قائمة الأطباء =====');
+            doctors.forEach(d => console.log(d.name));
+            console.log('==========================');
+        }
+
+        // 2.14 forEach – عدد الحجوزات
+        function countBookings() {
+            let count = 0;
+            bookings.forEach(() => count++);
+            alert(`📊 عدد الحجوزات: ${count}`);
+        }
+
+        // =============================================================
+        // 3. دوال العرض
+        // =============================================================
+        function renderDoctors(list) {
+            let data = list || doctors;
+            let tbody = document.getElementById('doctorTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = data.map(d =>
+                `<tr><td>${d.id}</td><td>${d.name}</td><td>${d.specialty}</td><td>${d.phone}</td></tr>`
+            ).join('');
+        }
+
+        function renderPatients(list) {
+            let data = list || patients;
+            let tbody = document.getElementById('patientTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = data.map(p =>
+                `<tr><td>${p.id}</td><td>${p.name}</td><td>${p.age}</td><td>${p.phone}</td></tr>`
+            ).join('');
+        }
+
+        function renderBookings() {
+            let tbody = document.getElementById('bookingTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = bookings.map(b => {
+                let doc = doctors.find(d => d.id === b.doctorId);
+                let pat = patients.find(p => p.id === b.patientId);
+                return `<tr><td>${b.id}</td><td>${doc ? doc.name : 'غير معروف'}</td><td>${pat ? pat.name : 'غير معروف'}</td><td>${b.date}</td><td>${b.time}</td></tr>`;
+            }).join('');
+        }
+
+        // =============================================================
+        // 4. تحديث الإحصائيات
+        // =============================================================
+        function updateDoctorStats(list) {
+            let data = list || doctors;
+            let total = data.length;
+            let specialties = data.map(d => d.specialty);
+            let unique = new Set(specialties).size;
+            let specialtyCount = specialties.reduce((acc, spec) => {
+                acc[spec] = (acc[spec] || 0) + 1;
+                return acc;
+            }, {});
+            let details = Object.entries(specialtyCount).map(([spec, count]) => `${spec} (${count})`).join('، ');
+            document.getElementById('doctorStatsText').innerHTML = `إجمالي: ${total} طبيب، تخصصات: ${unique} | ${details}`;
+        }
+
+        function updatePatientStats(list) {
+            let data = list || patients;
+            let total = data.length;
+            let avg = getAverageAge(data);
+            let upperNames = data.map(p => p.name.toUpperCase()).join('، ');
+            document.getElementById('patientStatsText').innerHTML =
+                `إجمالي: ${total} مريض، متوسط الأعمار: ${avg} سنة | الأسماء: ${upperNames}`;
+        }
+
+        function updateStats() {
+            let container = document.getElementById('statsSection');
+            if (!container) return;
+            let totalDoctors = doctors.length;
+            let totalPatients = patients.length;
+            let totalBookings = bookings.length;
+            let uniqueSpecialties = new Set(doctors.map(d => d.specialty)).size;
+            container.innerHTML = `
+                <div class="box"><h2><span class="counter" data-target="${totalDoctors}">0</span>+</h2><p>طبيب</p></div>
+                <div class="box"><h2><span class="counter" data-target="${totalPatients}">0</span>+</h2><p>مريض</p></div>
+                <div class="box"><h2><span class="counter" data-target="${totalBookings}">0</span>+</h2><p>موعد</p></div>
+                <div class="box"><h2><span class="counter" data-target="${uniqueSpecialties}">0</span></h2><p>تخصص طبي</p></div>
+            `;
+            animateCounters();
+        }
+
+        function animateCounters() {
+            let counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                let target = parseInt(counter.getAttribute('data-target'));
+                let duration = 1000, stepTime = 20;
+                let steps = duration / stepTime;
+                let increment = target / steps;
+                let current = 0;
+                let timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        counter.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        counter.textContent = Math.floor(current);
+                    }
+                }, stepTime);
+            });
+        }
+
+        // =============================================================
+        // 5. القوائم المنسدلة وإضافة الحجز
+        // =============================================================
+        function renderDoctorsSelect() {
+            let sel = document.getElementById('bookDoctorSelect');
+            if (!sel) return;
+            sel.innerHTML = '<option value="">اختر الطبيب</option>' +
+                doctors.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+        }
+
+        function renderPatientsSelect() {
+            let sel = document.getElementById('bookPatientSelect');
+            if (!sel) return;
+            sel.innerHTML = '<option value="">اختر المريض</option>' +
+                patients.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+        }
+
+        function addBooking() {
+            let doctorId = parseInt(document.getElementById('bookDoctorSelect').value);
+            let patientId = parseInt(document.getElementById('bookPatientSelect').value);
+            let date = document.getElementById('bookDateInput').value;
+            let time = document.getElementById('bookTimeInput').value;
+            if (!doctorId || !patientId || !date || !time) {
+                alert('الرجاء اختيار الطبيب والمريض وتحديد التاريخ والوقت');
+                return;
+            }
+            let exists = bookings.some(b => b.doctorId === doctorId && b.date === date && b.time === time);
+            if (exists) {
+                alert('⚠️ هذا الموعد محجوز بالفعل');
+                return;
+            }
+            bookings.push({ id: nextId.booking++, doctorId, patientId, date, time });
+            renderBookings();
+            updateStats();
+            document.getElementById('bookDateInput').value = '';
+            document.getElementById('bookTimeInput').value = '';
+            alert('✅ تم حجز الموعد بنجاح!');
+        }
+
+        // =============================================================
+        // 6. التنقل والوضع الليلي والمودال
+        // =============================================================
+        function showPage(pageId) {
+            let pages = document.querySelectorAll('.page-section');
+            let target = document.getElementById(pageId);
+            pages.forEach(p => p.classList.remove('active'));
+            if (target) {
+                target.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            if (pageId === 'home') updateStats();
+            if (pageId === 'doctor') { renderDoctors(doctors); updateDoctorStats(doctors); }
+            if (pageId === 'patient') { renderPatients(patients); updatePatientStats(patients); }
+            if (pageId === 'booking') { renderDoctorsSelect(); renderPatientsSelect(); renderBookings(); }
+        }
+
+        function toggleMode() {
+            let body = document.body;
+            let btn = document.querySelector('.mode-btn');
+            body.classList.toggle('dark');
+            btn.innerHTML = body.classList.contains('dark') ? '<i class="fas fa-sun"></i> نهاري' : '<i class="fas fa-moon"></i> ليلي';
+        }
+
+        function openModal() { document.getElementById('offerModal').classList.add('show'); }
+        function closeModal() { document.getElementById('offerModal').classList.remove('show'); }
+        document.getElementById('offerModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // =============================================================
+        // 7. استخدام تعليمات شرطية وحلقات (أمثلة إضافية)
+        // =============================================================
+        function getSpecialtyMessage(specialty) {
+            switch (specialty) {
+                case 'جراحة عامة': return 'جراح ماهر';
+                case 'اطفال': return 'طبيب أطفال';
+                case 'قلبية': return 'أخصائي قلب';
+                case 'قلب و باطنية': return 'أخصائي قلب وباطنية';
+                default: return 'تخصص طبي';
+            }
+        }
+
+        function findPatientById(id) {
+            let i = 0;
+            while (i < patients.length) {
+                if (patients[i].id === id) return patients[i];
+                i++;
+            }
+            return null;
+        }
+
+        function logBookings() {
+            console.log('===== الحجوزات =====');
+            for (let b of bookings) {
+                console.log(`موعد #${b.id}: ${b.date} الساعة ${b.time}`);
+            }
+        }
+
+        function logDoctorKeys() {
+            if (doctors.length > 0) {
+                for (let key in doctors[0]) console.log(key);
+            }
+        }
+
+        // =============================================================
+        // 8. التهيئة
+        // =============================================================
+        window.onload = function() {
+            renderDoctors(doctors);
+            renderPatients(patients);
+            renderBookings();
+            renderDoctorsSelect();
+            renderPatientsSelect();
+            updateStats();
+            updateDoctorStats(doctors);
+            updatePatientStats(patients);
+           
+            // أمثلة توضيحية
+            console.log('✅ تم تحميل النظام بنجاح!');
+            console.log('مثال على استخدام forEach:');
+            doctors.forEach(d => console.log(d.name));
+            console.log('مثال على استخدام switch: ' + getSpecialtyMessage(doctors[0].specialty));
+            console.log('مثال على استخدام while: ' + (findPatientById(1) ? 'تم العثور' : 'لم يتم العثور'));
+            logBookings();
+            logDoctorKeys();
+           
+            alert('🏥 مرحباً بك في نظام ClinicCare المتكامل!');
+        };
+    </script>
+</body>
+</html>

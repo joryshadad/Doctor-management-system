@@ -1,0 +1,38 @@
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+body { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: #fff; min-height: 100vh; display: flex; flex-direction: column; }
+header { background: rgba(0,0,0,.2); backdrop-filter: blur(10px); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 100%; top: 0; z-index: 1000; }
+.logo { font-size: 24px; font-weight: bold; color: #ffd54f; }
+nav a { color: #fff; text-decoration: none; margin-left: 20px; font-size: 16px; transition: .3s; }
+nav a:hover { color: #ffd54f; }
+main { padding-top: 72px; }
+.services { padding: 40px 20px; text-align: center; }
+.services h2 { margin-bottom: 30px; }
+.cards { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+.card { background: rgba(255,255,255,.1); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,.2); border-radius: 15px; padding: 25px; width: 250px; text-align: center; transition: .3s; }
+.card:hover { transform: translateY(-5px); background: rgba(255,255,255,.15); }
+.card .icon { font-size: 40px; margin-bottom: 15px; }
+.btn-card { display: inline-block; margin-top: 15px; padding: 8px 20px; background: rgba(255,255,255,.2); color: #fff; text-decoration: none; border-radius: 20px; font-size: .9rem; }
+.btn-card:hover { background: #ffd54f; color: #000; }
+footer { margin-top: auto; text-align: center; padding: 20px; background: rgba(0,0,0,.3); font-size: .9rem; }
+.auth-card { max-width: 420px; margin: 70px auto; padding: 32px; background: rgba(255,255,255,.96); color: #123b5d; border-radius: 18px; box-shadow: 0 12px 30px rgba(0,0,0,.16); text-align: center; }
+.auth-card h2 { margin-bottom: 10px; }
+.auth-card p { color: #607d8b; margin-bottom: 22px; }
+.auth-card form { display: grid; gap: 10px; text-align: right; }
+.auth-card input { width: 100%; padding: 11px 13px; border: 1px solid #ccd7df; border-radius: 8px; font-size: 15px; }
+.auth-card .btn-card { border: 0; margin-top: 8px; cursor: pointer; width: 100%; }
+.auth-card a { display: inline-block; margin-top: 18px; color: #087ea4; }
+.message { max-width: 680px; margin: 18px auto; padding: 12px 18px; border-radius: 9px; text-align: center; background: #e8f5e9; color: #1b5e20; }
+.message.error { background: #ffebee; color: #b71c1c; }
+.welcome { color: #ffe082; padding: 8px 12px; font-weight: bold; }
+
+/* تنسيق صفحات البيانات والجداول */
+.hero { min-height: 20vh; display: flex; justify-content: center; align-items: center; text-align: center; padding: 100px 20px 30px; }
+.hero h1 { font-size: 2.5rem; margin-bottom: 15px; }
+.hero h1 span { color: #ffd54f; }
+.data-section { padding: 20px 50px 45px; max-width: 1100px; margin: 0 auto; width: 100%; }
+.table-wrap { overflow-x: auto; background: rgba(255,255,255,.08); border-radius: 15px; padding: 15px; box-shadow: 0 8px 24px rgba(0,0,0,.14); }
+table { width: 100%; border-collapse: collapse; text-align: center; background: rgba(255,255,255,.08); }
+th, td { padding: 14px 15px; border-bottom: 1px solid rgba(255,255,255,.18); }
+th { background: rgba(0,0,0,.25); color: #ffd54f; font-size: 1rem; }
+td { color: #fff; font-size: 1rem; }
+tbody tr:hover { background: rgba(255,255,255,.12); }

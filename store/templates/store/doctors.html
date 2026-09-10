@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="hero" style="min-height:20vh; padding-top:100px;">
+    <div><h1>👨‍⚕️ إدارة <span>الأطباء</span></h1><p>تصفية، ترتيب، وعرض الأسماء بأحرف كبيرة/صغيرة.</p></div>
+</section>
+<section class="data-section">
+  
+    <div style="text-align:center; margin-bottom:18px;"><a href="{% url 'doctor_create' %}" style="color:#ffd54f; font-weight:bold;">+ إضافة طبيب من الواجهة</a></div>
+
+    <div class="filter-buttons">
+        <button onclick="filterDoctors('all')">الكل</button>
+        <button onclick="filterDoctors('جراحة عامة')">جراحة عامة</button>
+        <button onclick="filterDoctors('اطفال')">أطفال</button>
+        <button onclick="filterDoctors('قلبية')">قلبية</button>
+        <button onclick="filterDoctors('قلب و باطنية')">قلب وباطنية</button>
+        <button onclick="sortDoctorsByName()">ترتيب حسب الاسم</button>
+        <button onclick="alert(getDoctorsNamesUpper())">🔠 أسماء كبيرة</button>
+        <button onclick="alert(getDoctorsNamesLower())">🔡 أسماء صغيرة</button>
+        <button onclick="logDoctors()">📋 طباعة في الكونسول</button>
+        <button onclick="alert('إجمالي الأطباء: ' + doctors.length + ' طبيب')">📊 إحصائية</button>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>#</th><th>الاسم</th><th>التخصص</th><th>الهاتف</th></tr></thead>
+            <tbody id="doctorTableBody">
+                {% for doctor in doctors %}
+                <tr>
+                    <td>{{ doctor.id }}</td>
+                    <td><a href="{% url 'doctor_detail' doctor.pk %}" style="color:#ffd54f;">{{ doctor.name }}</a> <a href="{% url 'doctor_update' doctor.pk %}" style="color:#ffd54f;">تعديل</a></td>
+                    <td>{{ doctor.specialty }}</td>
+                    <td>{{ doctor.phone }} <a href="{% url 'doctor_delete' doctor.pk %}" style="color:#ffd54f;">حذف</a></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">لا يوجد أطباء حالياً (أضفهم من لوحة الأدمن)</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div style="margin-top:20px; text-align:center; background:rgba(255,255,255,0.05); padding:20px; border-radius:20px;">
+        <p><strong>📈 إحصائيات الأطباء:</strong> <span id="doctorStatsText"></span></p>
+        <p><strong>🔍 بحث عن طبيب:</strong>
+            <input type="text" id="searchDoctorInput" placeholder="أدخل اسم الطبيب" style="padding:8px 15px; border-radius:30px; border:none; background:rgba(255,255,255,0.15); color:#fff;">
+            <button onclick="searchDoctor()" style="padding:8px 20px; border-radius:30px; border:none; background:#ffd54f; color:#000; font-weight:bold; cursor:pointer;">بحث</button>
+            <span id="searchResult" style="margin-right:15px;"></span>
+        </p>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="hero" style="min-height:15vh; padding-top:80px; text-align: center;">
+    <div><h1>📅 حجز <span>المواعيد والخدمات</span></h1><p>إدارة المواعيد واختيار الأجهزة والفحوصات الطبية.</p></div>
+</section>
+
+<!-- الحاوية الرئيسية بتقسيم عمودين (يمين لنموذج الحجز، ويسار لجدول القائمة) -->
+<section style="padding: 20px; max-width: 1300px; margin: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; align-items: start;">
+  
+    <!-- 1. جهة اليمين: نموذج الحجز وإرسال البيانات للباك إند -->
+    <div class="add-form" style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+        <h3 style="color: #ffc107; margin-bottom: 20px; text-align: center; font-size: 20px;">📝 إضافة حجز جديد</h3>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <!-- اختيار الطبيب -->
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #ffc107;">اختر الطبيب المعالج:</label>
+                <select name="doctor" id="bookDoctorSelect" required style="width: 100%; padding: 10px; border-radius: 8px; background: #fff; color: #000; border: 2px solid #00d2ff;">
+                    <option value="">-- اختر الطبيب --</option>
+                    {% for doc in doctors %}
+                        <option value="{{ doc.name }}">{{ doc.name }} ({{ doc.specialty }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- اختيار المريض -->
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #ffc107;">اختر المريض:</label>
+                <select name="patient" id="bookPatientSelect" required style="width: 100%; padding: 10px; border-radius: 8px; background: #fff; color: #000; border: 2px solid #00d2ff;">
+                    <option value="">-- اختر المريض --</option>
+                    {% for pat in patients %}
+                        <option value="{{ pat.name }}">{{ pat.name }} - هاتف: {{ pat.phone }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- اختيار الخدمة أو الجهاز -->
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #ffc107;">اختر الجهاز أو الفحص:</label>
+                <select name="service" id="serviceSelect" onchange="updateServiceDetails()" required style="width: 100%; padding: 10px; border-radius: 8px; background: #fff; color: #000; border: 2px solid #00d2ff;">
+                    <option value="">-- اختر الخدمة المطلوبة --</option>
+                    {% for srv in services %}
+                        <option value="{{ srv.service_name }}"
+                                data-price="{{ srv.price }}"
+                                data-desc="{{ srv.description }}"
+                                data-img="{% if 'إيكو' in srv.service_name or 'Eco' in srv.service_name or 'التراساوند' in srv.service_name %}https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=600&q=80{% elif 'تخطيط' in srv.service_name or 'ECG' in srv.service_name or 'القلب' in srv.service_name %}https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=600&q=80{% elif 'دم' in srv.service_name or 'CBC' in srv.service_name %}https://images.unsplash.com/photo-1579165466741-7f35e4755660?auto=format&fit=crop&w=600&q=80{% else %}https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=600&q=80{% endif %}">
+                            {{ srv.service_name }} ({{ srv.price }} ريال)
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- عرض صورة الجهاز/الفحص والوصف والسعر داخل الزر الأصفر -->
+            <div id="serviceDisplayCard" style="display: none; margin-top: 15px; text-align: center; background: #ffffff; padding: 15px; border-radius: 10px; color: #333; border: 4px solid #ffc107;">
+                <div style="width: 100%; height: 180px; overflow: hidden; border-radius: 6px; margin-bottom: 10px; background: #fff;">
+                    <img id="srvImg" src="" alt="صورة الجهاز أو الفحص" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div style="display: inline-block; background-color: #ffc107; color: #212529; padding: 6px 20px; border-radius: 25px; font-size: 16px; font-weight: bold; margin-bottom: 8px;" id="srvTitle"></div>
+                <p id="srvDesc" style="font-size: 13px; color: #555; margin-bottom: 6px;"></p>
+                <p style="font-weight: bold; color: #28a745; font-size: 15px;">السعر: <span id="srvPrice"></span> ريال</p>
+            </div>
+
+            <!-- التاريخ والوقت -->
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <div style="flex: 1;">
+                    <label style="display: block; margin-bottom: 3px; font-size: 13px; font-weight: bold; color: #fff;">التاريخ:</label>
+                    <input type="date" name="date" required style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+                </div>
+                <div style="flex: 1;">
+                    <label style="display: block; margin-bottom: 3px; font-size: 13px; font-weight: bold; color: #fff;">الوقت:</label>
+                    <input type="time" name="time" required style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+                </div>
+            </div>
+
+            <!-- زر تأكيد الحجز -->
+            <button type="submit" style="width: 100%; margin-top: 20px; padding: 12px; background: #ffc107; color: #212529; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(255, 193, 7, 0.4);">
+                <i class="fas fa-check-circle"></i> تأكيد وإضافة الحجز للقائمة
+            </button>
+        </form>
+    </div>
+
+    <!-- 2. جهة اليسار: جدول عرض الحجوزات المسجلة من قاعدة البيانات -->
+    <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+        <h3 style="color: #ffc107; margin-bottom: 20px; text-align: center; font-size: 20px;">📋 قائمة الحجوزات المسجلة</h3>
+        <div class="table-wrap" style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; border-radius: 8px; overflow: hidden;">
+                <thead>
+                    <tr style="background: rgba(255, 193, 7, 0.2); color: #ffc107; font-size: 14px;">
+                        <th style="padding: 10px;">#</th>
+                        <th style="padding: 10px;">الطبيب</th>
+                        <th style="padding: 10px;">المريض</th>
+                        <th style="padding: 10px;">الخدمة</th>
+                        <th style="padding: 10px;">السعر</th>
+                        <th style="padding: 10px;">الوقت والتاريخ</th>
+                    </tr>
+                </thead>
+                <tbody style="text-align: center; color: #fff; font-size: 14px;">
+                    {% for b in bookings %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <td style="padding: 10px;">{{ forloop.counter }}</td>
+                        <td style="padding: 10px;">{{ b.doctor }}</td>
+                        <td style="padding: 10px;">{{ b.patient }}</td>
+                        <td style="padding: 10px;"><span style="background: #ffc107; color: #212529; padding: 3px 8px; border-radius: 10px; font-weight: bold; font-size: 12px;">{{ b.service }}</span></td>
+                        <td style="padding: 10px; color: #28a745; font-weight: bold;">{{ b.price }} ر.ي</td>
+                        <td style="padding: 10px; font-size: 12px;">{{ b.date }}<br>{{ b.time }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="padding: 20px; color: #ccc;">لا توجد حجوزات مسجلة حتى الآن.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+
+<!-- سكريبت عرض تفاصيل وفحص الخدمة عند اختيارها -->
+<script>
+function updateServiceDetails() {
+    const select = document.getElementById('serviceSelect');
+    const selectedCard = document.getElementById('serviceDisplayCard');
+    const option = select.options[select.selectedIndex];
+  
+    if (select.value) {
+        document.getElementById('srvImg').src = option.getAttribute('data-img');
+        document.getElementById('srvTitle').innerText = option.value;
+        document.getElementById('srvDesc').innerText = option.getAttribute('data-desc');
+        document.getElementById('srvPrice').innerText = option.getAttribute('data-price');
+        selectedCard.style.display = 'block';
+    } else {
+        selectedCard.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}
